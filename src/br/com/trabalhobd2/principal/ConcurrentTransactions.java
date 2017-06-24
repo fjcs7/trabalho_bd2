@@ -1,4 +1,4 @@
-package jdbcExample;
+package br.com.trabalhobd2.principal;
 
 import java.sql.Statement;
 import java.sql.Connection;
@@ -28,6 +28,21 @@ public class ConcurrentTransactions
 	private static boolean verbose = false;
 	
 	private static int numEmployees;
+        
+        private static String driverDeConexao, 
+                              stringDeConexao,
+                              loginBd,
+                              senhaBd;
+        
+        public ConcurrentTransactions(String driverDeConexao,
+                                      String stringDeConexao,
+                                      String loginBd,
+                                      String senhaBd){
+            this.driverDeConexao = driverDeConexao;
+            this.stringDeConexao = stringDeConexao;
+            this.loginBd = loginBd;
+            this.senhaBd = senhaBd;
+        }
 	
 	private static void printHelpMessage()
 	{
@@ -38,7 +53,7 @@ public class ConcurrentTransactions
 		
 	}
 	
-    public static void main(String[] args) throws SQLException 
+    public static void metodoDeEntrada(String[] args) throws SQLException 
     {
         // read command line parameters
     	if (args.length != 5 && args.length != 6) 
@@ -234,22 +249,18 @@ public class ConcurrentTransactions
   		/**
   		 * Change info below to your jdbc environment
   		 */
-   		String url = "jdbc:postgresql://Selenilda:5432/trabalhobd2";
+   		String url = stringDeConexao;
    		//String url = "jdbc:db2://localhost:50000/dbclass";
-   		try
-   		{
-    		Class.forName("org.postgresql.Driver");
+        try {
+            Class.forName(driverDeConexao);
     		//Class.forName("com.ibm.db2.jcc.DB2Driver");
-    	}
-    	
-    	catch (ClassNotFoundException e) 
-    	{
+    	} catch (ClassNotFoundException e) {
     		e.printStackTrace();
     		System.err.println("Postgres jdbc driver not found.");
     		//System.err.println("IBM DB2 jdbc driver not found.");
     		System.exit(-1);
     	}
-    	Connection conn = DriverManager.getConnection(url, "postgres", "1234");
+    	Connection conn = DriverManager.getConnection(url, loginBd, senhaBd);
     	//Connection conn = DriverManager.getConnection(url, "db2inst1", "zweiundzwangig");
     	//////////////////////////////////////////////////////////////////////////
     	
