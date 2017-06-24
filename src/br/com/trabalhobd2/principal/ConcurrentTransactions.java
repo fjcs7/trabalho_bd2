@@ -1,5 +1,10 @@
 package br.com.trabalhobd2.principal;
 
+import java.awt.TextArea;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,15 +38,18 @@ public class ConcurrentTransactions
                               stringDeConexao,
                               loginBd,
                               senhaBd;
+        private static TextArea novaSaida;
         
         public ConcurrentTransactions(String driverDeConexao,
                                       String stringDeConexao,
                                       String loginBd,
-                                      String senhaBd){
+                                      String senhaBd,
+                                      TextArea novaSaida){
             this.driverDeConexao = driverDeConexao;
             this.stringDeConexao = stringDeConexao;
             this.loginBd = loginBd;
             this.senhaBd = senhaBd;
+            this.novaSaida = novaSaida;
         }
 	
 	private static void printHelpMessage()
@@ -55,6 +63,27 @@ public class ConcurrentTransactions
 	
     public static void metodoDeEntrada(String[] args) throws SQLException 
     {
+        
+        if(novaSaida != null){
+            System.setOut(new PrintStream(new OutputStream() {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                @Override
+                public void write(int b) throws IOException {
+                    baos.write(b);
+                }
+                @Override
+                public void flush() throws IOException {
+                    novaSaida.append(baos.toString());
+                    baos.reset();
+                }
+                @Override
+                public void close() throws IOException {
+                    novaSaida.append(baos.toString());
+                    baos.reset();
+                }
+            }, true));
+        }
+
         // read command line parameters
     	if (args.length != 5 && args.length != 6) 
         {
